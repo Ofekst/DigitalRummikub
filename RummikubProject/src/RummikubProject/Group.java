@@ -51,10 +51,17 @@ public class Group
 	/*
 	* Determines a tile
 	*/
-	public Tile getItem(int num)
+	public int getItem(int num)
+	{
+		return tiles.get(num).getIndex();
+	}
+	/* */
+	
+	public Tile getItemTile(int num)
 	{
 		return tiles.get(num);
 	}
+	
 
 	/*
 	* Determines if a given tile is present in the group or not

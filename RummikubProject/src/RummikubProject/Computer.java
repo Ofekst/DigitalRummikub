@@ -14,6 +14,7 @@ import java.util.GregorianCalendar;
  */
 public class Computer {
 	Rack rack;
+	ArrayList<Tile> rackTiles;
 	static Computer THE_COMPUTER;
 	int boardHeight = 30;
 	int boardWidth = 50;
@@ -25,14 +26,15 @@ public class Computer {
 	Group[] sequences = new Group[130656];
 	Group[] sets = new Group[416];
 	Group[] allGroups;
+	Group[] rackSets;
+	Group[] rackSequences;
 	Solution bestSoln;
-	boolean solnFound,setBreak,anyPlaced;
+	boolean solnFound,setBreak,anyPlaced,foundSet,foundSec;
 	boolean used[];
 	int numAvailable,numSequences,numSets,numGroups,numSolns,leftOnRack,bestLeftOnRack;
 
 	/**
-	 * Computer Constructor creates a computer player instance @ param compsRack the
-	 * <code>Rack</code> containing the tiles of the computer player
+	 * Computer Constructor creates a computer player
 	 */
 	public Computer(Rack compsRack) {
 		rack = compsRack;
@@ -65,7 +67,13 @@ public class Computer {
 
 		// then pull out sets...
 		sets = getAllSets(availableTiles);
-		System.out.println("num Sets: " + numSets);
+		System.out.println("num Sets1: " + numSets);
+
+		
+		//rackTiles=rack.gettiles();
+		//rackSets = getAllSets(rackTiles);
+		
+		//System.out.println("num Sets2: " + numSets);
 
 		numGroups = numSets + numSequences;
 		allGroups = new Group[numGroups];
@@ -78,8 +86,8 @@ public class Computer {
 			}
 
 			for (int j = 0; j < allGroups[i].getSize(); j++) {
-				System.out.println(allGroups[i].getItem(j).getColor() + " , " + allGroups[i].getItem(j).getNumber()+
-						" , "+ allGroups[i].getItem(j).getIndex());
+				System.out.println(allGroups[i].getItemTile(j).getColor() + " , " + allGroups[i].getItemTile(j).getNumber()+
+						" , "+ allGroups[i].getItemTile(j).getIndex());
 			}
 			System.out.println("==========================================================");
 		}
@@ -151,7 +159,7 @@ public class Computer {
 					System.out.println("Starting place = " + x + ", " + y);
 
 					for (int j = 0; j < groupSize; j++) {
-						tileNums[j] = toPlace[i].getItem(j);
+						tileNums[j] = toPlace[i].getItemTile(j);
 						tileToPlace[j] = tileNums[j];
 						CanvasPanel.whichTile(tileNums[j]);
 
@@ -380,7 +388,7 @@ public class Computer {
 								allSequences[numThisTile - 1] = new Group();
 								// add to group all from previous group....
 								for (int z = 0; z < allSequences[q].size; z++) {
-									allSequences[numThisTile - 1].addItem(allSequences[q].getItem(z));
+									allSequences[numThisTile - 1].addItem(allSequences[q].getItemTile(z));
 								}
 								allSequences[numThisTile - 1].addItem(availableTiles.get(j));
 							}
@@ -402,7 +410,7 @@ public class Computer {
 								// add all tiles from its previous group except last
 								for (int z = 0; z < allSequences[numThisTile - 1 - currentGroups].size - 1; z++) {
 									allSequences[numThisTile - 1]
-											.addItem(allSequences[numThisTile - 1 - currentGroups].getItem(z));
+											.addItem(allSequences[numThisTile - 1 - currentGroups].getItemTile(z));
 								}
 								// then add new tile instead
 								allSequences[numThisTile - 1].addItem(availableTiles.get(j));
@@ -417,7 +425,7 @@ public class Computer {
 								sequences[numSequences] = new Group();
 								for (int m = 0; m < allSequences[k].size; m++) {
 									// put into all sequences place
-									sequences[numSequences].addItem(allSequences[k].getItem(m));
+									sequences[numSequences].addItem(allSequences[k].getItemTile(m));
 								}
 								numSequences++;
 							}
@@ -435,7 +443,7 @@ public class Computer {
 								sequences[numSequences] = new Group();
 								for (int m = 0; m < allSequences[k].size; m++) {
 									// put into all sets place
-									sequences[numSequences].addItem(allSequences[k].getItem(m));
+									sequences[numSequences].addItem(allSequences[k].getItemTile(m));
 								}
 								numSequences++;
 							}
@@ -447,7 +455,8 @@ public class Computer {
 
 					lastVal = val;
 					lastCol = col;
-				} else // it its not the same color its the end of sequences for that tile, so sort
+				}
+				else // it its not the same color its the end of sequences for that tile, so sort
 						// them out
 				{
 					for (int k = 0; k < numThisTile; k++) {
@@ -455,7 +464,7 @@ public class Computer {
 						} else {
 							sequences[numSequences] = new Group();
 							for (int m = 0; m < allSequences[k].size; m++) {
-								sequences[numSequences].addItem(allSequences[k].getItem(m));
+								sequences[numSequences].addItem(allSequences[k].getItemTile(m));
 							}
 							numSequences++;
 						}
@@ -473,45 +482,32 @@ public class Computer {
 
 	private void sortForSets(ArrayList<Tile> availableTiles) {
 		int numAvailable = availableTiles.size();
+		Tile tempTile=null;
 
-		Collections.sort(availableTiles, new SortByRun());
-
-		Tile tempTile;
-		for (int j = availableTiles.size() - 1; j > 0; j--) {
-			for (int i = 0; i < j; i++) {
-				if (availableTiles.get(i).getNumber() == availableTiles.get(i + 1).getNumber())
-					if (!availableTiles.get(i).getColor().equals(availableTiles.get(i + 1).getColor())) {
-						tempTile = availableTiles.get(i);
-						availableTiles.set(i, availableTiles.get(i + 1));
-						availableTiles.set(i + 1, tempTile);
-					}
-			}
-		}
-
-		/*		 
-
-		  // sort by colour then number
+		// sort by color then number
 		for (int j=numAvailable-1; j>0; j--) { 
 			for (int i=0; i<j; i++) { 
-				if(availableTiles.get(i).getNumber()>availableTiles.get(i+1).getNumber()) {
+				if(availableTiles.get(i).getIndex()>availableTiles.get(i+1).getIndex()) {
 					tempTile = availableTiles.get(i+1);
 					availableTiles.set(i+1,availableTiles.get(i));
 					availableTiles.set(i, tempTile);
 					}
 				} 
 			}
-		  
-		  
+		   
 		  // sort number but not within number 
-		for (int j = numAvailable - 1; j > 0;j--) { 
-			for (int i = 0; i < j; i++) { 
+		for (int j = numAvailable - 1; j > 0;j--)
+		{ 
+			for (int i = 0; i < j; i++)
+			{ 
 				// leave jokers out of ordering - make them be at end.... 
-				if (availableTiles[i].getNumber() % 26 > availableTiles[i + 1].getNumber() % 26 && 
-						availableTiles[i + 1].getNumber() < 104) {
-					tempTile = availableTiles[i + 1]; 
-					availableTiles[i + 1] = availableTiles[i];
-					availableTiles[i] = tempTile; 
-					}
+				if (availableTiles.get(i).getIndex() % 26 > availableTiles.get(i + 1).getIndex() % 26 && 
+						availableTiles.get(i + 1).getIndex() < 104) 
+				{
+					tempTile = availableTiles.get(i+1);
+					availableTiles.set(i+1,availableTiles.get(i));
+					availableTiles.set(i, tempTile);
+				}
 				}
 			}
 		  
@@ -523,18 +519,17 @@ public class Computer {
 		  // sort tiles by colour then number 
 		  for (int i = 0; i < numAvailable - 1; i++) { 
 			  // leave jokers out of ordering - make them be at end.... 
-			  int val_1 =	availableTiles[i].getNumber(); 
-			  int val_2 = availableTiles[i + 1].getNumber();
-			  if (val_1 == val_2 && availableTiles[i].getNumber() > availableTiles[i+1].getNumber()) { 
-				  tempTile = availableTiles[i + 1];
-				  availableTiles[i + 1] = availableTiles[i];
-				  availableTiles[i] = tempTile;
+			  int val_1 =	availableTiles.get(i).getNumber(); 
+			  int val_2 = availableTiles.get(i + 1).getNumber();
+			  if (val_1 == val_2 && availableTiles.get(i).getIndex() > availableTiles.get(i+1).getIndex()) { 
+					tempTile = availableTiles.get(i+1);
+					availableTiles.set(i+1,availableTiles.get(i));
+					availableTiles.set(i, tempTile);
 				  someChanged = true;
 				  }
 			  }
 		  }
 		  while (someChanged);
-	*/
 	}
 
 	/*--------------------------------------------------------------
@@ -598,7 +593,7 @@ public class Computer {
 
 								// add to group all from previous group....
 								for (int z = 0; z < allSets[q].size; z++) {
-									allSets[numThisTile - 1].addItem(allSets[q].getItem(z));
+									allSets[numThisTile - 1].addItem(allSets[q].getItemTile(z));
 								}
 
 								// also add current tile to each group
@@ -629,7 +624,7 @@ public class Computer {
 								// add all tiles from its previous group except last
 								for (int z = 0; z < allSets[numThisTile - 1 - currentGroups].size - 1; z++) {
 									allSets[numThisTile - 1]
-											.addItem(allSets[numThisTile - 1 - currentGroups].getItem(z));
+											.addItem(allSets[numThisTile - 1 - currentGroups].getItemTile(z));
 								}
 								// then add new tile instead
 								allSets[numThisTile - 1].addItem(availableTiles.get(j));
@@ -650,7 +645,7 @@ public class Computer {
 								for (int m = 0; m < allSets[k].size; m++)
 								{
 									// put into all sets place
-									sets[numSets].addItem(allSets[k].getItem(m));
+									sets[numSets].addItem(allSets[k].getItemTile(m));
 								}
 								numSets++;
 							}
@@ -675,7 +670,7 @@ public class Computer {
 							sets[numSets] = new Group();
 							for (int m = 0; m < allSets[k].size; m++)
 							{
-								sets[numSets].addItem(allSets[k].getItem(m));
+								sets[numSets].addItem(allSets[k].getItemTile(m));
 							}
 							numSets++;
 						}
@@ -777,11 +772,16 @@ public class Computer {
 		for (int i = 0; i < rackNum; i++) {
 			availableTiles.add(rack.tiles.get(i));
 		}
-		System.out.println("Total available tiles: ");
+		//System.out.println("Total available tiles: ");
+		System.out.println("#######################################");
 
-		for (int i = 0; i < numTiles; i++) {
-			System.out.println((availableTiles.get(i)).getColor() + " " + (availableTiles.get(i)).getNumber());
-		}
+		System.out.println("Computer's rack: ");
+
+		//for (int i = 0; i < numTiles; i++) {
+			System.out.println(rack.toString());
+			//System.out.println((availableTiles.get(i)).getColor() + " " + (availableTiles.get(i)).getNumber());
+		//}
+		
 		/*
 		 * for (int j = 0; j < rack.tiles.size(); j++)
 		 * availableTiles.add(rack.tiles.get(j));

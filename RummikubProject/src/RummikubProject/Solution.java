@@ -29,7 +29,7 @@ public class Solution
 	{
 		for(int i=0; i<toAdd.size; i++)
 		{
-			contentGroups[size].addItem(toAdd.getItem(i));
+			contentGroups[size].addItem(toAdd.getItemTile(i));
 		}
 		size++;
 	}
