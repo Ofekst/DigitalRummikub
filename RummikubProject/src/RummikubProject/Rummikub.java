@@ -19,8 +19,8 @@ public class Rummikub extends JFrame {
 	static Rummikub GAME_FRAME;
 	
 	BoardPane board;
-	UserPane userPane;
-	ButtonsPanel btnsPanel;
+	UserPane userPane,compPane;
+	ButtonsPane btnsPanel;
 	JPanel top;
 
 	final int startRackSize = 14;
@@ -46,6 +46,7 @@ public class Rummikub extends JFrame {
 		{
 			comps_rack = new Rack(pool, startRackSize);
 			compPlayer=new Computer(comps_rack);
+			compPane=new UserPane(comps_rack);
 			aiNumOfTiles=comps_rack.sizeOfRack();
 		}
 		poolSize=pool.sizeOfRack();
@@ -53,8 +54,9 @@ public class Rummikub extends JFrame {
 		
 		board = new BoardPane();
 		userPane = new UserPane(players_rack);
-		btnsPanel = new ButtonsPanel(pool, players_rack,poolSize,num,aiNumOfTiles);
-
+		
+	//	btnsPanel = new ButtonsPanel(pool, players_rack,poolSize,num,aiNumOfTiles);
+		btnsPanel=new ButtonsPane(pool, players_rack,poolSize,num,aiNumOfTiles);
 		
 		top = new JPanel();
 		
@@ -70,16 +72,25 @@ public class Rummikub extends JFrame {
 		top.add(btnsPanel, BorderLayout.WEST);
 		top.setPreferredSize(new Dimension(1300, 600));
 		
-		getContentPane().add(top, BorderLayout.NORTH);
-		getContentPane().add(userPane, BorderLayout.SOUTH);
-
+		if(num==1) {
+			getContentPane().add(compPane, BorderLayout.NORTH);
+			getContentPane().add(top, BorderLayout.CENTER);
+			getContentPane().add(userPane, BorderLayout.SOUTH);
+		}
+		else {
+			getContentPane().add(top, BorderLayout.NORTH);
+			getContentPane().add(userPane, BorderLayout.SOUTH);
+		}
+	
 		pack();
 		setVisible(true);
-		btnsPanel.setGameFrame(this);
+		btnsPanel.getPanel().setGameFrame(this);
 		GAME_FRAME = this;
 
 
 		showPlayersTiles(players_rack);
+		showCompsTiles(comps_rack);
+
 		
 	}
 	
@@ -114,10 +125,15 @@ public class Rummikub extends JFrame {
 
 	public static ButtonsPanel getButtonsPanel()
 	{
-		return GAME_FRAME.btnsPanel;
+		return GAME_FRAME.btnsPanel.getPanel();
 	}
 	
 	
+	static CardsPanel getCompPanel()
+	{
+		 //GAME_FRAME.showCompsTiles(getCompsRack());
+		return GAME_FRAME.compPane.getPanel();
+	}
 	/**
 	* Determines the computer's <code>Rack</code>
 	* @return the <code>Rack</code> corresponding to the tiles in the computer's hand
@@ -172,7 +188,7 @@ public class Rummikub extends JFrame {
 	*/
 	public static void tellUser(String infoStr)
 	{
-		GAME_FRAME.btnsPanel.output(infoStr);
+		GAME_FRAME.btnsPanel.getPanel().output(infoStr);
 	}
 
 	
@@ -184,4 +200,9 @@ public class Rummikub extends JFrame {
 	{
 		playersRack.display(userPane.getPanel());
 	}
-	}
+	public void showCompsTiles(Rack compRack)
+	{
+		compRack.display(compPane.getPanel());
+	}	
+
+}

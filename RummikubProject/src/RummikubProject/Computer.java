@@ -69,12 +69,6 @@ public class Computer {
 		sets = getAllSets(availableTiles);
 		System.out.println("num Sets1: " + numSets);
 
-		
-		//rackTiles=rack.gettiles();
-		//rackSets = getAllSets(rackTiles);
-		
-		//System.out.println("num Sets2: " + numSets);
-
 		numGroups = numSets + numSequences;
 		allGroups = new Group[numGroups];
 
@@ -126,6 +120,7 @@ public class Computer {
 			// turn.", "Rummikub", JOptionPane.INFORMATION_MESSAGE);
 			Rummikub.getButtonsPanel().decSizeOfPool();
 			Rummikub.getButtonsPanel().incAInumOfTiles();
+			rack.display(Rummikub.getCompPanel());
 			// System.out.println("AI tiles after taking tile are: "+rack.toString());
 
 		} else {
@@ -181,10 +176,12 @@ public class Computer {
 					}
 				}
 			}
+	
 			JOptionPane.showMessageDialog(null, "Computer player is finished placing tiles. Your turn.", "Rummikub",
 					JOptionPane.INFORMATION_MESSAGE);
 			Rummikub.getButtonsPanel().incAInumOfTiles();
-
+			//Rummikub.getCompPanel();
+			rack.display(Rummikub.getCompPanel());
 		}
 
 		if (rack.sizeOfRack() == 0) {
@@ -221,7 +218,7 @@ public class Computer {
 			}
 
 			if (!clash) {
-				used[i] = true;
+				used[i] = true;// used[0]
 				findSolution(i + 1);
 				used[i] = false;
 			}
