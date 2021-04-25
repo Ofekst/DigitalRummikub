@@ -107,7 +107,7 @@ public class Rack
 		*/
 		public void removeTileNumber(int tileNum)
 		{
-			System.out.println("Rack before remove "+sizeOfRack());
+		//	System.out.println("Rack before remove "+sizeOfRack());
 
 			for(int i=0; i<size; i++)//size
 			{
@@ -117,7 +117,7 @@ public class Rack
 				}
 
 			}
-			System.out.println("Rack after remove "+sizeOfRack());
+			//System.out.println("Rack after remove "+sizeOfRack());
 		}
 	  
 

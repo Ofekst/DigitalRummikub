@@ -226,7 +226,7 @@ public class ButtonsPanel extends JPanel {
 			{
 				players_rack.addtile(newTile);
 				gameFr.showPlayersTiles(players_rack);
-				System.out.println(players_rack.toString());
+				//System.out.println(players_rack.toString());
 				infoText.setText("Tile taken.");
 				decSizeOfPool();
 				//stklbl.setText("Num of Cards in stack:" + poolSize);

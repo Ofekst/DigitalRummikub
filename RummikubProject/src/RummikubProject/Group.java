@@ -328,4 +328,11 @@ public class Group
 		}
 		return clash;
 	}
+
+
+	@Override
+	public String toString() {
+		return "Group [size=" + size + ", tiles=" + tiles + "]";
+	}
+	
 }// END of class Group

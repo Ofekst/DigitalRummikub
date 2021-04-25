@@ -127,7 +127,7 @@ public class Computer {
 		} else {
 			// place the tiles from the best solution
 			System.out.println("About to start placing groups");
-			System.out.println("Rack size 1: "+rack.sizeOfRack());
+		//	System.out.println("Rack size 1: "+rack.sizeOfRack());
 			System.out.println("Num groups to place: " + bestSoln.getSize());
 
 			System.out.println("Setting board to blank");
@@ -173,9 +173,9 @@ public class Computer {
 
 						// remove from rack if necessary
 						if (!onBoard) {
-							System.out.println("Rack size 2: "+rack.sizeOfRack());
-							System.out.println("The removed tile is: "+tileNums[j].getNumber()+" "+tileNums[j].getColor());
-							rack.removeTileNumber(tileNums[j].getIndex());/** not sure about that! */
+				//			System.out.println("Rack size 2: "+rack.sizeOfRack());
+				//			System.out.println("The removed tile is: "+tileNums[j].getNumber()+" "+tileNums[j].getColor());
+							rack.removeTileNumber(tileNums[j].getIndex());
 						}
 					}
 				}
@@ -183,14 +183,12 @@ public class Computer {
 	
 			JOptionPane.showMessageDialog(null, "Computer player is finished placing tiles. Your turn.", "Rummikub",
 					JOptionPane.INFORMATION_MESSAGE);
-			throwCounter++;
-			if(throwCounter>=3)
-				System.out.println("success "+ throwCounter);
+			//throwCounter++;
+			//if(throwCounter>=3)
+			//	System.out.println("success "+ throwCounter);
 			
-			System.out.println("Rack size: "+rack.sizeOfRack());
+			//System.out.println("Rack size: "+rack.sizeOfRack());
 			Rummikub.getButtonsPanel().incAInumOfTiles();
-			//Rummikub.getCompPanel();
-			/**/
 			rack.display(Rummikub.getCompPanel());
 			
 			int blankIndex = rack.sizeOfRack();
@@ -218,7 +216,7 @@ public class Computer {
 		}
 
 		boolean clash = false;
-		// System.out.println("in find solution: x = " + x);
+		System.out.println("in find solution: x = " + x);
 		for (int i = x; i < numGroups; i++) {
 
 			for (int j = 0; j < x + 1; j++)
@@ -228,23 +226,43 @@ public class Computer {
 					if (allGroups[i].clashesWith(allGroups[j])) {
 						clash = true;
 					}
+					
+					System.out.println("clash= "+clash);
+				}
+				else	{
+					System.out.println("["+x+"]Not entered because used["+j+"]= "+used[j]);
 				}
 			}
+		//	System.out.println("used array["+i+"]"+used[i]);
 
-			if (!clash) {
+			if (!clash) 
+			{
+				System.out.println("True in now ");
 				used[i] = true;
 				findSolution(i + 1);
 				used[i] = false;
 			}
 		}
+	//	for(int i=0;i<used.length;i++)
+	//		System.out.println("["+x+"]used array[ "+i+"]"+used[i]);
 
 		// set up temporary solution
 		Solution tempSoln = new Solution();
+//		for(int i=0;i<allGroups.length;i++) {
+	//		System.out.println("All groups ["+x+"] : "+allGroups[i].toString());
+
+		//}
 		for (int j = 0; j < numGroups; j++) {
 			if (used[j] == true) {
 				tempSoln.addGroup(allGroups[j]);
 			}
 		}
+		Group [] tempG=tempSoln.getGroups();
+		for (int j = 0; j < tempSoln.getSize(); j++) {
+			System.out.println("tempG["+x+"]: "+tempG[j].toString());
+		}
+
+		
 
 		// now test that solution meets criteria
 		boolean keepSoln = true;
@@ -253,14 +271,14 @@ public class Computer {
 		for (int j = 0; j < numGroups; j++) {
 			if (used[j] == true) {
 				numTilesUsed += allGroups[j].getSize();
-				System.out.println("Size of group" + j + ": " + allGroups[j].getSize());
+				System.out.println("Size of group " + j + ": " + allGroups[j].getSize());
 				System.out.println("numTilesUsed: " + numTilesUsed);
 			}
 		}
 
 		leftOnRack = numAvailable - numTilesUsed;
 		System.out.println("Left on Rack: " + leftOnRack);
-		System.out.println(rack.toString());
+		//System.out.println(rack.toString());
 
 		if (leftOnRack == 0) {
 			System.out.println("Best solution possible like ever found!");
@@ -301,13 +319,26 @@ public class Computer {
 			for (int i = 0; i < tempSoln.getSize(); i++) {
 				bestSoln.addGroup(tempGroups[i]);
 			}
-
+			/*
+			Group [] bestG=bestSoln.getGroups();
+			System.out.println("best solution ["+x+"]: ");
+			for(int i=0;i<bestG.length;i++)
+				System.out.println(bestG[i].toString());
+			*/
 			solnFound = true;
 		} else {
 			solnFound = false;
 		}
-
-	}
+		Group [] bestG=bestSoln.getGroups();
+		/*
+		System.out.println("Final best solution ["+x+"] : ");
+		System.out.println("size: "+bestG.length);
+		for(int i=0;i<bestG.length;i++) 
+		{
+			System.out.println(bestG[i].toString());	
+		}
+		*/
+		}
 
 	// sorts the tiles to do search for sequences
 	private void sortForSequence(ArrayList<Tile> availableTiles) {
@@ -552,7 +583,7 @@ public class Computer {
 
 		// sort array of available tiles for extracting sets
 		sortForSets(availableTiles);
-		System.out.println("Sorted in getAllSets: "+availableTiles.toString());
+		//System.out.println("Sorted in getAllSets: "+availableTiles.toString());
 
 		// set up tiles sorted by number
 		for (int i = 0; i < numAvailable; i++) {
@@ -629,11 +660,11 @@ public class Computer {
 							currentGroups *= 2;
 						}
 					}
-					System.out.println("Now Im here-1");
+		//			System.out.println("Now Im here-1");
 
 					if (j == numAvailable - 1) // then it will be end of sets for this tile, so sort them out
 					{
-						System.out.println("Now Im here-2");
+				//		System.out.println("Now Im here-2");
 
 						for (int k = 0; k < numThisTile; k++) {
 							if (allSets[k].size < 3) {
