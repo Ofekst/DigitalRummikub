@@ -107,13 +107,17 @@ public class Rack
 		*/
 		public void removeTileNumber(int tileNum)
 		{
-			for(int i=0; i<size; i++)
+			System.out.println("Rack before remove "+sizeOfRack());
+
+			for(int i=0; i<size; i++)//size
 			{
-				if(getTileNumber(i)==tileNum)
+				if(getTileIndex(i)==tileNum)
 				{
 					removeSpecificTile(i);
 				}
+
 			}
+			System.out.println("Rack after remove "+sizeOfRack());
 		}
 	  
 

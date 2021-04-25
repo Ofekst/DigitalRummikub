@@ -7,7 +7,6 @@ import RummikubProject.Tile.color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 
 /**
  * This class is the computer player
@@ -22,6 +21,7 @@ public class Computer {
 	Tile manipBoard[][] = new Tile[boardHeight][boardWidth];
 	Tile[] boardTiles = new Tile[104];
 	int numOnBoard = 0;
+	int throwCounter=0;
 
 	Group[] sequences = new Group[130656];
 	Group[] sets = new Group[416];
@@ -55,6 +55,7 @@ public class Computer {
 		numOnBoard = 0;
 		anyPlaced = false;
 		setBreak = false;
+		
 		ArrayList<Tile> availableTiles = getAvailableTiles();
 
 		numAvailable = availableTiles.size();
@@ -126,6 +127,7 @@ public class Computer {
 		} else {
 			// place the tiles from the best solution
 			System.out.println("About to start placing groups");
+			System.out.println("Rack size 1: "+rack.sizeOfRack());
 			System.out.println("Num groups to place: " + bestSoln.getSize());
 
 			System.out.println("Setting board to blank");
@@ -171,7 +173,9 @@ public class Computer {
 
 						// remove from rack if necessary
 						if (!onBoard) {
-							rack.removeTileNumber(tileNums[j].getNumber());/** not sure about that! */
+							System.out.println("Rack size 2: "+rack.sizeOfRack());
+							System.out.println("The removed tile is: "+tileNums[j].getNumber()+" "+tileNums[j].getColor());
+							rack.removeTileNumber(tileNums[j].getIndex());/** not sure about that! */
 						}
 					}
 				}
@@ -179,9 +183,20 @@ public class Computer {
 	
 			JOptionPane.showMessageDialog(null, "Computer player is finished placing tiles. Your turn.", "Rummikub",
 					JOptionPane.INFORMATION_MESSAGE);
+			throwCounter++;
+			if(throwCounter>=3)
+				System.out.println("success "+ throwCounter);
+			
+			System.out.println("Rack size: "+rack.sizeOfRack());
 			Rummikub.getButtonsPanel().incAInumOfTiles();
 			//Rummikub.getCompPanel();
+			/**/
 			rack.display(Rummikub.getCompPanel());
+			
+			int blankIndex = rack.sizeOfRack();
+			Rummikub.getCompPanel().drawTile(null,blankIndex);
+			Rummikub.getCompPanel().repaint();
+				
 		}
 
 		if (rack.sizeOfRack() == 0) {
@@ -195,9 +210,6 @@ public class Computer {
 
 	}
 
-	/*-------------------------------------------
-	---------------------------------------------
-	-------------------------------------------*/
 	private void findSolution(int x) {
 
 		if (setBreak) {
@@ -209,8 +221,10 @@ public class Computer {
 		// System.out.println("in find solution: x = " + x);
 		for (int i = x; i < numGroups; i++) {
 
-			for (int j = 0; j < x + 1; j++) {
-				if (used[j] == true) {
+			for (int j = 0; j < x + 1; j++)
+			{
+				if (used[j] == true)
+				{
 					if (allGroups[i].clashesWith(allGroups[j])) {
 						clash = true;
 					}
@@ -218,7 +232,7 @@ public class Computer {
 			}
 
 			if (!clash) {
-				used[i] = true;// used[0]
+				used[i] = true;
 				findSolution(i + 1);
 				used[i] = false;
 			}
@@ -295,9 +309,6 @@ public class Computer {
 
 	}
 
-	/*-------------------------------------------
-	---------------------------------------------
-	-------------------------------------------*/
 	// sorts the tiles to do search for sequences
 	private void sortForSequence(ArrayList<Tile> availableTiles) {
 
@@ -323,10 +334,6 @@ public class Computer {
 
 	}
 
-	/*--------------------------------------------------------------
-	----------------------------------------------------------------
-	----------------------------------------------------------------
-	--------------------------------------------------------------*/
 
 	// method that returns all possible sequences from all available tiles
 	private Group[] getAllSequences(ArrayList<Tile> availableTiles) {
@@ -529,10 +536,6 @@ public class Computer {
 		  while (someChanged);
 	}
 
-	/*--------------------------------------------------------------
-	----------------------------------------------------------------
-	----------------------------------------------------------------
-	--------------------------------------------------------------*/
 	// method that returns all possible sets from all available tiles
 	private Group[] getAllSets(ArrayList<Tile> availableTiles) {
 		int numAvailable = availableTiles.size();
@@ -594,14 +597,11 @@ public class Computer {
 								}
 
 								// also add current tile to each group
-								//if(!)
 								allSets[numThisTile - 1].addItem(availableTiles.get(j));
 							}
 						}
 						else // if its a set smaller than 3
 						{
-					//		System.out.println("I'm here");
-
 							for (int q = 0; q < currentGroups; q++) {
 								// just add current to tile current groups
 								allSets[q].addItem(availableTiles.get(j));
@@ -679,10 +679,7 @@ public class Computer {
 		return sets;
 	}
 
-	/*--------------------------------------------------------------
-	----------------------------------------------------------------
-	----------------------------------------------------------------
-	--------------------------------------------------------------*/
+
 	// finds a space on the board for a group of size amount
 	private Dimension getSpace(int amount) {
 		for (int i = 0; i < boardHeight; i++) {
@@ -728,10 +725,6 @@ public class Computer {
 		return new Dimension(-1, -1);
 	}
 
-	/*--------------------------------------------------------------
-	----------------------------------------------------------------
-	----------------------------------------------------------------
-	--------------------------------------------------------------*/
 	private ArrayList<Tile> getAvailableTiles() {
 		int rackNum = rack.sizeOfRack();
 		int numTiles;
@@ -769,15 +762,12 @@ public class Computer {
 		for (int i = 0; i < rackNum; i++) {
 			availableTiles.add(rack.tiles.get(i));
 		}
-		//System.out.println("Total available tiles: ");
 		System.out.println("#######################################");
 
 		System.out.println("Computer's rack: ");
 
-		//for (int i = 0; i < numTiles; i++) {
-			System.out.println(rack.toString());
-			//System.out.println((availableTiles.get(i)).getColor() + " " + (availableTiles.get(i)).getNumber());
-		//}
+		System.out.println(rack.toString());
+
 		
 		/*
 		 * for (int j = 0; j < rack.tiles.size(); j++)

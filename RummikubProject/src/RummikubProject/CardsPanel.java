@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -57,7 +58,7 @@ public class CardsPanel extends JPanel {
 		
 		tilesGraphics = originalRack.getGraphics();
 		tilesGraphics.drawImage(img,i*45,0,50,100,this);
-		
+
 	}
 	public void paint(Graphics g)
 	{
