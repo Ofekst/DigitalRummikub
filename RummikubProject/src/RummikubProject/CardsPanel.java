@@ -44,7 +44,7 @@ public class CardsPanel extends JPanel {
 		if(i<playersRack.sizeOfRack()) 
 		{
 		
-			System.out.println("The card that supposed to be is: "+tileId.getNumber()+" in color: "+tileId.getColor());
+			//System.out.println("The card that supposed to be is: "+tileId.getNumber()+" in color: "+tileId.getColor());
 			if(tileId.getNumber()==20)
 				img = new ImageIcon("images\\JOKER.png").getImage();
 			else

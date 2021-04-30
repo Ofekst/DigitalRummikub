@@ -13,7 +13,7 @@ import java.util.Collections;
  */
 public class Computer {
 	Rack rack;
-	ArrayList<Tile> rackTiles;
+	ArrayList<Tile> rackTiles, boardT;
 	static Computer THE_COMPUTER;
 	int boardHeight = 30;
 	int boardWidth = 50;
@@ -25,14 +25,14 @@ public class Computer {
 
 	Group[] sequences = new Group[130656];
 	Group[] sets = new Group[416];
-	Group[] allGroups;
+	Group[] allGroups, allRackGroups;
 	Group[] rackSets;
 	Group[] rackSequences;
 	Solution bestSoln;
 	boolean solnFound,setBreak,anyPlaced,foundSet,foundSec;
 	boolean used[];
 	int numAvailable,numSequences,numSets,numGroups,numSolns,leftOnRack,bestLeftOnRack;
-
+	int rackNumSec,rackNumSet;
 	/**
 	 * Computer Constructor creates a computer player
 	 */
@@ -57,16 +57,25 @@ public class Computer {
 		setBreak = false;
 		
 		ArrayList<Tile> availableTiles = getAvailableTiles();
+		//ArrayList<Tile> rackTiles=getCompRackTiles();
+		//ArrayList<Tile> boardT= getBoardsTiles();
 
 		numAvailable = availableTiles.size();
 		bestLeftOnRack = rack.sizeOfRack();
 
 		// first pull out sequences...
+		//rackSequences=getAllSequences(rackTiles);
+		//rackNumSec=numSequences;
+		//System.out.println("Rack Sequences: "+rackNumSec);
 		
 		sequences = getAllSequences(availableTiles);
 		System.out.println("num Sequences: " + numSequences);
 
 		// then pull out sets...
+		//rackSets=getAllSequences(rackTiles);
+		//rackNumSet=numSets;
+		//System.out.println("Rack Sequences: "+rackNumSec);
+		
 		sets = getAllSets(availableTiles);
 		System.out.println("num Sets1: " + numSets);
 
@@ -229,7 +238,8 @@ public class Computer {
 					
 					System.out.println("clash= "+clash);
 				}
-				else	{
+				else	
+				{
 					System.out.println("["+x+"]Not entered because used["+j+"]= "+used[j]);
 				}
 			}
@@ -319,17 +329,18 @@ public class Computer {
 			for (int i = 0; i < tempSoln.getSize(); i++) {
 				bestSoln.addGroup(tempGroups[i]);
 			}
-			/*
+			/*	*/
 			Group [] bestG=bestSoln.getGroups();
 			System.out.println("best solution ["+x+"]: ");
 			for(int i=0;i<bestG.length;i++)
 				System.out.println(bestG[i].toString());
-			*/
+		
 			solnFound = true;
-		} else {
+		} else 
+		{
 			solnFound = false;
 		}
-		Group [] bestG=bestSoln.getGroups();
+		//Group [] bestG=bestSoln.getGroups();
 		/*
 		System.out.println("Final best solution ["+x+"] : ");
 		System.out.println("size: "+bestG.length);
@@ -339,6 +350,7 @@ public class Computer {
 		}
 		*/
 		}
+
 
 	// sorts the tiles to do search for sequences
 	private void sortForSequence(ArrayList<Tile> availableTiles) {
@@ -756,6 +768,37 @@ public class Computer {
 		return new Dimension(-1, -1);
 	}
 
+	private ArrayList<Tile> getCompRackTiles(){
+		
+		int rackNum = rack.sizeOfRack();
+
+		ArrayList<Tile> rTiles = new ArrayList<Tile>();
+		
+		for (int i = 0; i < rackNum; i++)
+		{
+			rTiles.add(rack.tiles.get(i));
+		}
+		
+		return rTiles;
+	}
+	
+	private ArrayList<Tile> getBoardsTiles(){
+		
+		ArrayList<Tile> boardsTiles = new ArrayList<Tile>();
+
+		startingBoard = CanvasPanel.getBoard();
+		for (int i = 0; i < boardHeight; i++) {
+			for (int j = 0; j < boardWidth; j++) {
+				if (startingBoard[i][j] != null) {
+					 boardsTiles.add(startingBoard[i][j]);
+				}
+			}
+		}
+		return boardsTiles;
+		
+		
+	}
+	
 	private ArrayList<Tile> getAvailableTiles() {
 		int rackNum = rack.sizeOfRack();
 		int numTiles;
@@ -766,7 +809,7 @@ public class Computer {
 			for (int j = 0; j < boardWidth; j++) {
 				manipBoard[i][j] = startingBoard[i][j];
 				if (startingBoard[i][j] != null) {
-					System.out.println("startingBoard: " + startingBoard[i][j].toString());
+				//	System.out.println("startingBoard: " + startingBoard[i][j].toString());
 					boardTiles[numOnBoard] = startingBoard[i][j];
 					numOnBoard++;
 				}
@@ -781,7 +824,7 @@ public class Computer {
 		for (int i = 0; i < boardHeight; i++) {
 			for (int j = 0; j < boardWidth; j++) {
 				if (manipBoard[i][j] != null) {
-					System.out.println("manipBoard: " + manipBoard[i][j].toString());
+					//System.out.println("manipBoard: " + manipBoard[i][j].toString());
 					availableTiles.add(manipBoard[i][j]);
 
 				}
