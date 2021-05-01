@@ -5,7 +5,7 @@ package RummikubProject;
 */
 public class Solution
 {
-	Group[] contentGroups = new Group[35];
+	Group[] contentGroups = new Group[50];
 	int size;
 
 	/*
